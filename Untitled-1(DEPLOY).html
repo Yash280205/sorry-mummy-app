@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Message for Mom</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #666;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        #link-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border: 1px dashed #ced4da;
+            border-radius: 8px;
+            word-wrap: break-word;
+        }
+
+        #link-container p {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        #final-message h1 {
+            font-size: 2.5em;
+            color: #ff69b4;
+            animation: fadeIn 2s;
+        }
+        
+        #final-message p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            animation: fadeIn 3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-container">
+
+        <div id="setup-view">
+            <h1>Create Your Apology Link</h1>
+            <p>Fill this form to generate a special link for your mom.</p>
+            <div class="input-group">
+                <label for="momName">Your Mom's Name (for verification):</label>
+                <input type="text" id="momName" placeholder="e.g., Pushpa Keshari">
+            </div>
+            <div class="input-group">
+                <label for="sonName">Your Name:</label>
+                <input type="text" id="sonName" placeholder="e.g., Yash Raj Keshari">
+            </div>
+            <div class="input-group">
+                <label for="momAge">Your Mom's Age:</label>
+                <input type="number" id="momAge" placeholder="Enter her age">
+            </div>
+            <div class="input-group">
+                <label for="sonAge">Your Age:</label>
+                <input type="number" id="sonAge" placeholder="e.g., 20">
+            </div>
+            <button onclick="generateLink()">Generate Link</button>
+            <div id="link-container" style="display:none;">
+                <p>Copy this link and send it to her:</p>
+                <span id="generated-link"></span>
+            </div>
+        </div>
+
+        <div id="login-view" style="display:none;">
+            <h1>Just a Quick Check</h1>
+            <p>Please fill out these details to see your message.</p>
+            <div class="input-group">
+                <label for="momNameGuess">Your Name:</label>
+                <input type="text" id="momNameGuess" placeholder="e.g., Pushpa Keshari">
+            </div>
+            <div class="input-group">
+                <label for="sonNameGuess">Your Son's Name:</label>
+                <input type="text" id="sonNameGuess" placeholder="e.g., Yash Raj Keshari">
+            </div>
+            <div class="input-group">
+                <label for="momAgeGuess">Your Age:</label>
+                <input type="number" id="momAgeGuess" placeholder="Enter your age">
+            </div>
+            <div class="input-group">
+                <label for="sonAgeGuess">Your Son's Age:</label>
+                <input type="number" id="sonAgeGuess" placeholder="Enter his age">
+            </div>
+            <button onclick="checkDetails()">Next</button>
+        </div>
+
+        <div id="final-message" style="display:none;">
+            </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // This function runs when the page loads
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('data')) {
+                document.getElementById('setup-view').style.display = 'none';
+                document.getElementById('login-view').style.display = 'block';
+            }
+        };
+
+        // Function for you to create the link
+        function generateLink() {
+            const momName = document.getElementById('momName').value;
+            const sonName = document.getElementById('sonName').value;
+            const momAge = document.getElementById('momAge').value;
+            const sonAge = document.getElementById('sonAge').value;
+
+            if (!momName || !sonName || !momAge || !sonAge) {
+                alert('Please fill out all the fields!');
+                return;
+            }
+
+            const data = { m: momName, s: sonName, ma: momAge, sa: sonAge };
+            const encodedData = btoa(JSON.stringify(data));
+
+            const baseUrl = window.location.href.split('?')[0];
+            const finalLink = `${baseUrl}?data=${encodedData}`;
+
+            document.getElementById('generated-link').innerText = finalLink;
+            document.getElementById('link-container').style.display = 'block';
+        }
+
+        // REVISED function for your mom to verify the details
+        function checkDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const encodedData = params.get('data');
+            
+            const correctData = JSON.parse(atob(encodedData));
+
+            const momNameGuess = document.getElementById('momNameGuess').value;
+            const sonNameGuess = document.getElementById('sonNameGuess').value;
+            const momAgeGuess = document.getElementById('momAgeGuess').value;
+            const sonAgeGuess = document.getElementById('sonAgeGuess').value;
+
+            if (momNameGuess.trim().toLowerCase() === correctData.m.trim().toLowerCase() &&
+                sonNameGuess.trim().toLowerCase() === correctData.s.trim().toLowerCase() &&
+                momAgeGuess === correctData.ma &&
+                sonAgeGuess === correctData.sa) {
+                
+                document.getElementById('login-view').style.display = 'none';
+                
+                const messageDiv = document.getElementById('final-message');
+                
+                // ***** THE CHANGE IS ON THIS LINE *****
+                // The H1 tag now always says "Sorry Mummy" instead of using the variable from the form.
+                messageDiv.innerHTML = `
+                    <h1>Sorry Mummy ❤️</h1>
+                    <p>
+                        Sorry for everything... you've been handling me for <strong>${correctData.sa} years</strong>.
+                        <br><br>
+                        You've grown me and loved me unconditionally. Gussa mat raho, ab chill karo.
+                        <br><br>
+                        Smile karo, cute lagti ho aap!
+                        <br><br>
+                        Call karna jab gussa shant ho jaye.
+                        <br><br>
+                        - Your Son, ${correctData.s}
+                    </p>
+                `;
+                messageDiv.style.display = 'block';
+
+                confetti({
+                    particleCount: 150,
+                    spread: 180,
+                    origin: { y: 0.6 }
+                });
+
+            } else {
+                alert('Oops! Something doesn\'t match. Please check the details and try again.');
+            }
+        }
+    </script>
+
+</body>
+</html>
